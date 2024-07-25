@@ -1,0 +1,151 @@
+ table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+      .delete-movie {
+        color: red;
+        text-decoration: none;
+      }
+      .delete-movie:hover {
+        text-decoration: underline;
+      }
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4; 
+    color: #333; 
+    margin: 0;
+    padding: 0;
+  }
+  
+  .main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color:#27ae60; 
+    padding: 20px;
+  }
+  
+  .container {
+    background-color: #000; 
+    color: #fff; 
+    border-radius: 8px; 
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  #add-movie-form h1 {
+    margin-top: 0;
+    font-size: 24px;
+    text-align: center;
+    color: #fff;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  input[type="text"], input[type="date"], input[type="file"], textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444; 
+    border-radius: 4px;
+    background-color: #222; 
+    color: #fff; 
+  }
+  
+  textarea {
+    resize: vertical; 
+  }
+  
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  
+  /* Button styling */
+  button {
+    background-color: #27ae60; /* Green background */
+    color: #fff; /* White text */
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+  }
+  
+  button:hover {
+    background-color: #2ecc71; /* Slightly lighter green on hover */
+  }
+  
+  /* Movies list styling */
+  #movies-list {
+    margin-top: 20px;
+  }
+  
+  #movies-list h2 {
+    font-size: 20px;
+    text-align: center;
+    color: #fff;
+  }
+  
+  #movie-items {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  #movie-items li {
+    padding: 10px;
+    border-bottom: 1px solid #444; /* Dark border between items */
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  #movie-items a {
+    color: #1abc9c; /* Link color */
+    text-decoration: none;
+  }
+  
+  #movie-items a:hover {
+    text-decoration: underline;
+  }
+  
+  #movie-items .delete-movie {
+    color: #e74c3c; /* Red color for delete links */
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background-color: #333;
+  }
+  .delete-movie {
+    color: red;
+    text-decoration: none;
+  }
+  .delete-movie:hover {
+    text-decoration: underline;
+  }

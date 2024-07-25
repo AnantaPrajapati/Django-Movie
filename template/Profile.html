@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - MovieAllday</title>
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="{% static 'profile.css' %}" />
+    <style>
+      .message-container {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+      }
+      .message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div class="container">
+        <h1>User Profile</h1>
+
+        <div class="profile-container">
+          <div class="profile-picture">
+            <img
+              src="static/profile-placeholder.png"
+              alt="Profile Picture"
+              id="profile-picture"
+            />
+            <button id="edit-profile-picture-btn">Edit</button>
+          </div>
+          <div class="profile-details">
+            <h2>{{ user.username }}</h2>
+            <p>Email: {{ user.email }}</p>
+            <p>Joined: {{ user.date_joined }}</p>
+            <a
+              href="{% url 'password' user.id%}"
+              class="Change-password"
+              data-id="{{ user.id }}"
+              >Change password</a
+            >
+            <a
+              href="{% url 'delete_profile' user.id %}"
+              class="delete-profile"
+              data-id="{{ user.id }}"
+              >Delete</a
+            >
+            {% if user.is_authenticated %}
+            <form
+              action="{% url 'logout' %}"
+              method="post"
+              style="display: inline"
+            >
+              {% csrf_token %}
+              <button type="submit" id="logout-btn">Logout</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var messageContainer = document.getElementById("message-container");
+        if (messageContainer) {
+          setTimeout(function () {
+            messageContainer.style.display = "none";
+          }, 5000);
+        }
+      });
+    </script>
+    <script src="static/script.js"></script>
+  </body>
+</html>

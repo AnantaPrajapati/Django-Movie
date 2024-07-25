@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MovieAllday</title>
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="static/style.css" />
+    <style>
+      .message-container {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+      }
+      .message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div class="container">
+        <h1>MovieAllday</h1>
+        <p>
+          Discover and explore your favorite movies like never before with our
+          intuitive Movie Search App, your ultimate cinematic companion.
+        </p>
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Enter movie name here..."
+            id="movie-name"
+          />
+          <button id="search-btn">Search</button>
+        </div>
+        <div id="result"></div>
+        <br />
+        <!-- Add Movie Form -->
+        {% comment %}
+        <div id="add-movie-form">
+          <h2>Add Movie</h2>
+          <form id="movie-form" method="post">
+            {% csrf_token %}
+            <input
+              type="text"
+              name="title"
+              id="movie-title"
+              placeholder="Movie Title"
+              required
+            />
+            <button type="submit">Add Movie</button>
+          </form>
+        </div>
+        {% endcomment %} {% comment %} <br />
+        {% endcomment %} {% comment %}
+        <!-- Movies List -->
+        <div id="movies-list">
+          <h2>Movies List</h2>
+          <ul id="movie-items">
+            {% for movie in movies %}
+            <li>
+              {{ movie.title }}
+              <a href="{% url 'edit_movie' movie.id %}">Edit</a>
+              <a
+                href="{% url 'delete_movie' movie.id %}"
+                class="delete-movie"
+                data-id="{{ movie.id }}"
+                >Delete</a
+              >
+            </li>
+            {% empty %}
+            <br />
+            <li>No movies added yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endcomment %} {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" style="display: inline">
+          {% csrf_token %}
+          <button type="submit" id="logout-btn">Logout</button>
+        </form>
+        {% endif %} {% block content %} {% endblock %}
+        <a href="{% url 'AddMovie' %}" class="btn btn-primary" id="Movie-btn"
+          >Add Movie</a
+        >
+        <form style="display: inline">
+          {% csrf_token %}
+          <a href="{% url 'Profile' %}" class="btn btn-primary" id="Profile-btn"
+            >Profile</a
+          >
+        </form>
+      </div>
+    </div>
+    <script src="static/script.js"></script>
+    {% if messages %}
+    <div id="message-container" class="message-container">
+      {% for message in messages %}
+      <div class="message{% if message.tags %} {{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var messageContainer = document.getElementById("message-container");
+        if (messageContainer) {
+          setTimeout(function () {
+            messageContainer.style.display = "none";
+          }, 5000);
+        }
+      });
+    </script>
+  </body>
+</html>

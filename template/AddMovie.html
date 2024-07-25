@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MovieAllday</title>
+    <link rel="stylesheet" href="{% static 'movie.css' %}" />
+    <style>
+      .message-container {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+      }
+      .message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div class="container">
+        <!-- Add Movie Form -->
+        <div id="add-movie-form">
+          <h1>Add Movie</h1>
+          <form
+            id="movie-form"
+            method="post"
+            action="{% url 'AddMovie' %}"
+            enctype="multipart/form-data"
+          >
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="movie_icon">Movie Icon</label>
+              <input
+                type="file"
+                name="movie_icon"
+                id="movie_icon"
+                accept="image/*"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="movie_title">Movie Title</label>
+              <input
+                type="text"
+                name="movie_title"
+                id="movie_title"
+                placeholder="Movie Title"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="release_date">Release Date</label>
+              <input
+                type="date"
+                name="release_date"
+                id="release_date"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="actor">Actor(s)</label>
+              <input
+                type="text"
+                name="actor"
+                id="actor"
+                placeholder="Actor(s)"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea
+                name="description"
+                id="description"
+                placeholder="Movie Description"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <input
+                type="text"
+                name="country"
+                id="country"
+                placeholder="Country of Origin"
+                required
+              />
+            </div>
+            <button type="submit">Add Movie</button>
+          </form>
+        </div>
+
+        <!-- Movies List -->
+        <div id="movies-list">
+          <h2>Movies List</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Movie Icon</th>
+                <th>Title</th>
+                <th>Release Date</th>
+                <th>Actor(s)</th>
+                <th>Description</th>
+                <th>Country</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for movie in movies %}
+              <tr>
+                <td>
+                  <img
+                    src="{{ movie.movie_icon.url }}"
+                    alt="{{ movie.movie_title }}"
+                    style="width: 50px; height: auto"
+                  />
+                </td>
+                <td>{{ movie.movie_title }}</td>
+                <td>{{ movie.release_date }}</td>
+                <td>{{ movie.actor }}</td>
+                <td>{{ movie.description }}</td>
+                <td>{{ movie.country }}</td>
+                <td>
+                  <a href="{% url 'edit_movie' movie.id %}">Edit</a>
+                  <a
+                    href="{% url 'delete_movie' movie.id %}"
+                    class="delete-movie"
+                    data-id="{{ movie.id }}"
+                    >Delete</a
+                  >
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7">No movies added yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% if messages %}
+    <div id="message-container" class="message-container">
+      {% for message in messages %}
+      <div class="message{% if message.tags %} {{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var messageContainer = document.getElementById("message-container");
+        if (messageContainer) {
+          setTimeout(function () {
+            messageContainer.style.display = "none";
+          }, 5000);
+        }
+      });
+    </script>
+    <!-- Link to JS -->
+    <script src="{% static 'movie.js' %}"></script>
+  </body>
+</html>
