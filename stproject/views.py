@@ -4,11 +4,23 @@ from django.contrib.auth import authenticate, login as auth_login, logout, updat
 from django.contrib import messages
 from django.contrib.auth.models import User
 from service.forms import MovieForm
-from service.models import Movie
+from service.models import Movie, Profile
 
 
+
+# def sample_json_view(request):
+#     data = {
+#         'message': 'Hello, world!',
+#         'status': 'success',
+#         'items': [1, 2, 3, 4, 5]
+#     }
+#     return JsonResponse(data)
 # @AuthMiddleware
 def index(request):
+    # import pdb
+    # pdb.set_trace()
+    movies = Movie.objects.all().select_related('user')
+    return render(request, 'index.html', {'movies': movies})
 #    data={
 #        'title':'House black',
 #        'place': 'Dragon stone',
@@ -22,7 +34,7 @@ def index(request):
            
 #        ]
 #    }
-   return render (request,"index.html")
+#    return render (request,"index.html")
 
 def course(request):
     return HttpResponse("course")
@@ -44,11 +56,14 @@ def login(request):
 
 def register(request):
     if request.method == 'POST':
+       
         email = request.POST["email"]
         username = request.POST['username']
         password = request.POST['password']
         Confirmpassword = request.POST['Confirmpassword']
-        user = authenticate(request, email=email, username=username, password=password )
+        city = request.POST['city']
+        gender = request.POST['gender']
+        user = authenticate(request, email=email, username=username, password=password)
         if password == Confirmpassword:
             if User.objects.filter(username=username).exists():
                 messages.error(request, "username already exists")
@@ -59,6 +74,8 @@ def register(request):
             else:
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
+                user_profile = Profile(user=user, gender=gender, city=city)
+                user_profile.save()
                 messages.success(request, "Registration successful")
                 return redirect('login')
         else:
@@ -76,21 +93,23 @@ def details(request, course):
     return HttpResponse(course)
 
 
-def AddMovie(request):
+def AddMovie(request, user_id):
+    user = get_object_or_404(User, id=user_id)
     if request.method == 'POST':
         form = MovieForm(request.POST, request.FILES)
         if form.is_valid():
-            print(form.cleaned_data)
-            form.save()
+            movie = form.save(commit=False)
+            movie.user = user
+            movie.save()
             messages.success(request, "Movie added successfully!")
-            return redirect('AddMovie')
+            return redirect('AddMovie', user_id=user.id)
         else:
             print(form.errors)
             messages.error(request, "Error adding movie. Please correct the errors below.")
     else:
         form = MovieForm()
-    movies = Movie.objects.all()
-    return render(request, 'AddMovie.html', {'form': form, 'movies': movies})
+    movies = Movie.objects.filter(user=user)
+    return render(request, 'AddMovie.html', {'form': form, 'movies': movies, 'user_id': user.id})
 
 
 def edit_movie(request, movie_id):
@@ -119,7 +138,7 @@ def delete_movie(request, movie_id):
     if request.method == 'GET':
         movie.delete()
         messages.success(request, "Movie deleted successfully!")
-        return redirect('index')  
+        return redirect('AddMovie')  
     return render(request, 'AddMovie.html', {'movie': movie})
 
 def delete_profile(request, user_id):

@@ -7,7 +7,7 @@
     <title>MovieAllday</title>
 
     <!-- Style CSS -->
-    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
     <style>
       .message-container {
         position: fixed;
@@ -45,52 +45,17 @@
         </div>
         <div id="result"></div>
         <br />
-        <!-- Add Movie Form -->
-        {% comment %}
-        <div id="add-movie-form">
-          <h2>Add Movie</h2>
-          <form id="movie-form" method="post">
-            {% csrf_token %}
-            <input
-              type="text"
-              name="title"
-              id="movie-title"
-              placeholder="Movie Title"
-              required
-            />
-            <button type="submit">Add Movie</button>
-          </form>
-        </div>
-        {% endcomment %} {% comment %} <br />
-        {% endcomment %} {% comment %}
-        <!-- Movies List -->
-        <div id="movies-list">
-          <h2>Movies List</h2>
-          <ul id="movie-items">
-            {% for movie in movies %}
-            <li>
-              {{ movie.title }}
-              <a href="{% url 'edit_movie' movie.id %}">Edit</a>
-              <a
-                href="{% url 'delete_movie' movie.id %}"
-                class="delete-movie"
-                data-id="{{ movie.id }}"
-                >Delete</a
-              >
-            </li>
-            {% empty %}
-            <br />
-            <li>No movies added yet.</li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endcomment %} {% if user.is_authenticated %}
+
+        <!-- User Authenticated -->
+        {% if user.is_authenticated %}
         <form action="{% url 'logout' %}" method="post" style="display: inline">
           {% csrf_token %}
           <button type="submit" id="logout-btn">Logout</button>
         </form>
-        {% endif %} {% block content %} {% endblock %}
-        <a href="{% url 'AddMovie' %}" class="btn btn-primary" id="Movie-btn"
+        <a
+          href="{% url 'AddMovie' user.id %}"
+          class="btn btn-primary"
+          id="Movie-btn"
           >Add Movie</a
         >
         <form style="display: inline">
@@ -99,9 +64,53 @@
             >Profile</a
           >
         </form>
+        {% endif %}
+
+        <!-- Movies List -->
+        <div id="movies-list">
+          <h2>Movies List</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Movie Icon</th>
+                <th>Title</th>
+                <th>Release Date</th>
+                <th>Actor(s)</th>
+                <th>Description</th>
+                <th>Country</th>
+                <th>Director</th>
+                <th>Added By</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for movie in movies %}
+              <tr>
+                <td>
+                  <img
+                    src="{{ movie.movie_icon.url }}"
+                    alt="{{ movie.movie_title }}"
+                    style="width: 50px; height: auto"
+                  />
+                </td>
+                <td>{{ movie.movie_title }}</td>
+                <td>{{ movie.release_date }}</td>
+                <td>{{ movie.actor }}</td>
+                <td>{{ movie.description }}</td>
+                <td>{{ movie.country }}</td>
+                <td>{{ movie.director }}</td>
+                <td>{{ user.added_by.username }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="9">No movies added yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <script src="static/script.js"></script>
+    <script src="{% static 'script.js' %}"></script>
     {% if messages %}
     <div id="message-container" class="message-container">
       {% for message in messages %}
