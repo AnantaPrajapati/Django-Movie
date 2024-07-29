@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import cloudinary_storage
+from datetime import timedelta, datetime
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +28,8 @@ SECRET_KEY = 'django-insecure-k#^-i09tvklx0+@@^iro)gi^04(xq#)_#yzqrydd^fhpi9zayy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ["https://*.on-acorn.io", "https://*.on-acorn.io"]
 
 
 # Application definition
@@ -40,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'service',
     'cloudinary',
-    'cloudinary_storage'
+    'cloudinary_storage',
+    'rest_framework',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -98,6 +103,8 @@ DATABASES = {
 
 
 
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -144,11 +151,26 @@ STATICFILES_DIRS = [
     BASE_DIR, "static",
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME':'dawfvl61t',
     'API_KEY':'237111674384819',
     'API_SECRET':'IPQwVxBAuXjEW5no-RRgsQzI5LU'
 }
+
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 

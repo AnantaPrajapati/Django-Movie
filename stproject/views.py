@@ -5,36 +5,26 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from service.forms import MovieForm
 from service.models import Movie, Profile
+from rest_framework_simplejwt.tokens import RefreshToken 
+from rest_framework import status
+# from rest_framework.authentication.
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from service.serializer import MovieSerializer, UserSerializer
+from django.http import JsonResponse
 
 
 
-# def sample_json_view(request):
-#     data = {
-#         'message': 'Hello, world!',
-#         'status': 'success',
-#         'items': [1, 2, 3, 4, 5]
-#     }
-#     return JsonResponse(data)
+
 # @AuthMiddleware
 def index(request):
     # import pdb
     # pdb.set_trace()
     movies = Movie.objects.all().select_related('user')
     return render(request, 'index.html', {'movies': movies})
-#    data={
-#        'title':'House black',
-#        'place': 'Dragon stone',
-#        'dragons': ['syrax', 'vermithor', 'caraxes', 'meleys'],
-#        'NumberofDragons': [1, 3 ,5 , 7],
-#        'dragonRider':[
-#                {'dragonRider':'daemon', 'dragon':'caraxes'},
-#                 {'dragonRider':'Aemond', 'dragon':'Vaghar'},
-#                {'dragonRider':'Aegon', 'dragon':'sunfyre'},
-#                {'dragonRider':'Rahnerya', 'dragon':'Syrax'}
-           
-#        ]
-#    }
-#    return render (request,"index.html")
+
 
 def course(request):
     return HttpResponse("course")
@@ -46,17 +36,21 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            messages.success(request, ("Logged in successfully"))
+            messages.success(request, "Logged in successfully")
+
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            print("Access Token:", access_token)
+
             return redirect('index')
         else:
-            messages.success(request,("Invalid username or password"))
+            messages.error(request, "Invalid username or password")
             return redirect('login')
     else:
         return render(request, "registration/login.html")
-
 def register(request):
     if request.method == 'POST':
-       
         email = request.POST["email"]
         username = request.POST['username']
         password = request.POST['password']
@@ -121,7 +115,7 @@ def edit_movie(request, movie_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Movie updated successfully!")
-            return redirect('AddMovie')
+            return redirect('index')
         else:
             print(form.errors)  
     else:
@@ -138,7 +132,7 @@ def delete_movie(request, movie_id):
     if request.method == 'GET':
         movie.delete()
         messages.success(request, "Movie deleted successfully!")
-        return redirect('AddMovie')  
+        return redirect('index')  
     return render(request, 'AddMovie.html', {'movie': movie})
 
 def delete_profile(request, user_id):
@@ -178,3 +172,64 @@ def profile(request):
     # profile = get_object_or_404(User, user_id)
 
     return render(request, 'Profile.html')
+
+
+
+@api_view(['GET'])
+def MovieList(request):
+    movies = Movie.objects.all()
+    serializer = MovieSerializer(movies, many=True)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def MovieDetail(request, pk):
+
+    movies = Movie.objects.get(id=pk)
+    serializer = MovieSerializer(movies, many=False)
+
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def MovieCreate(request):
+    # import pdb
+    # pdb.set_trace()
+    serializer = MovieSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def MovieUpdate(request, pk):
+    # import pdb
+    # pdb.set_trace()
+    movie = Movie.objects.get(id = pk)
+    serializer = MovieSerializer(instance= movie, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def MovieDelete(request, pk):
+    # import pdb
+    # pdb.set_trace()
+    movie = Movie.objects.get(id = pk)
+    movie.delete()
+ 
+    return Response("movie deleted successfully !!!")
+
+
+@api_view(['GET'])
+def UserList(request):
+    user = User.objects.all()
+    serializer = UserSerializer(User, many = True)
+
+    return Response(serializer.data)

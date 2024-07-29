@@ -17,10 +17,29 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from stproject import views
+from rest_framework.routers import DefaultRouter
+from service.views import MovieViewSet, UserViewSet, LoginView
+from django.urls import path
+from rest_framework_simplejwt import views as jwt_views
+# from service import views
+
+
+
+router = DefaultRouter()
+router.register(r'MV', MovieViewSet)
+
+router.register(r'UL', UserViewSet)
+
+# router.register('loginview', LoginView)
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-   path('', views.index, name='index'),
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('', views.index, name='index'),
     path('course/', views.course, name='course'),
     path('details/<slug:course>/', views.details, name='details'),
     path('login/', views.login, name='login'),
@@ -34,5 +53,13 @@ urlpatterns = [
     path('Profile/', views.profile, name='Profile'),
     #    path('delete/', views.delete, name='delete'),
     path('', include("django.contrib.auth.urls")),
+    path('MovieList/', views.MovieList, name='MovieList'),
+    path('MovieDetail/<str:pk>', views.MovieDetail, name='MovieDetail'),
+    path('MovieCreate/', views.MovieCreate, name='MovieCreate'),
+    path('MovieUpdate/<str:pk>', views.MovieUpdate, name='MovieUpdate'),
+    path('MovieDelete/<str:pk>', views.MovieDelete, name='MovieDelete'),
+    path('UserList/', views.UserList, name='Userlist'),
+    path('', include(router.urls)),
+    # path('loginView/', views.LoginView, name='LoginView' )
      
 ]
