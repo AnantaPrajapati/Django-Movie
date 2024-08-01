@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout, update_session_auth_hash
 from django.contrib import messages
@@ -7,6 +7,9 @@ from service.forms import MovieForm
 from service.models import Movie, Profile
 from rest_framework_simplejwt.tokens import RefreshToken 
 from rest_framework import status
+from service.user_auth import generate_otp
+from django.core.mail import send_mail
+from django.conf import settings
 # from rest_framework.authentication.
 
 
@@ -49,6 +52,8 @@ def login(request):
             return redirect('login')
     else:
         return render(request, "registration/login.html")
+    
+    
 def register(request):
     if request.method == 'POST':
         email = request.POST["email"]
@@ -69,14 +74,55 @@ def register(request):
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
                 user_profile = Profile(user=user, gender=gender, city=city)
+                email_otp = generate_otp()
+                user_profile.email_otp = email_otp
                 user_profile.save()
-                messages.success(request, "Registration successful")
-                return redirect('login')
+                send_mail(
+                'Email Verification OTP',
+                f'Your OTP for email verification is: {email_otp}',
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+                )
+                return redirect('verify_otp', user_id=user.id)
+                # messages.success(request, "Registration successful")
+                # return redirect('login')
         else:
             messages.error(request, "Passwords do not match")
             return redirect('register')
     else:
         return render(request, "registration/register.html")
+    
+
+
+def verify_otp(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        profile = Profile.objects.get(user_id=user_id)
+    except User.DoesNotExist:
+        raise Http404("User does not exist.")
+    except Profile.DoesNotExist:
+        raise Http404("Profile does not exist.")
+
+    # # Debugging output
+    # print(f'User: {user.username}, {user.email}, {user.user_id}')
+    # print(f'Profile: {profile.city}, {profile.gender}, {profile.email_otp}, {profile.user_id}')
+
+    if request.method == 'POST':
+        email_otp = request.POST['email_otp']
+
+        if email_otp == profile.email_otp:
+            profile.is_email_verified = True
+            profile.email_otp = None
+            profile.save()
+            user.save()
+            auth_login(request, user)
+            return redirect('index')
+        else:
+            return render(request, 'verify_otp.html', {'error': 'Invalid OTP! Please try again.'})
+
+    return render(request, 'verify_otp.html', {'user_id': user_id})
+
     
 def custom_logout(request):
     logout(request)
@@ -187,7 +233,6 @@ def MovieDetail(request, pk):
 
     movies = Movie.objects.get(id=pk)
     serializer = MovieSerializer(movies, many=False)
-
     return Response(serializer.data)
 
 

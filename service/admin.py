@@ -6,4 +6,5 @@ class ServiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Movie, ServiceAdmin)
 admin.site.register(Profile)
+
 # Register your models here.

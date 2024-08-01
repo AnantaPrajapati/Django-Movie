@@ -20,19 +20,20 @@ class Movie(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female')])
+    is_email_verified = models.BooleanField(default=False)
+    email_otp = models.CharField(max_length=9, null=True, blank=True)
     city = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.gender
+        return self.city
 
-    
-# @receiver(post_save, sender=User)
-# def create_user_profile(sender, instance, created, **kwargs):
-#     if created: 
-#         Profile.objects.create(user=instance)
 
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     instance.profile.save()
+# class otp(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+#     otp = models.CharField(max_length =6)
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"OTP for {self.user.email} is {self.otp}"
 
 # Create your models here.

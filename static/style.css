@@ -11,13 +11,15 @@ body {
     background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
     background-repeat: no-repeat;
     background-attachment: fixed;
+    overflow-y: auto; /* Ensure body can scroll if content overflows */
 }
 
 .main {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start; /* Align items to the top */
+    padding: 20px; /* Add padding to the top and bottom */
+    min-height: 100vh;
 }
 
 .container {
@@ -29,6 +31,7 @@ body {
     border-radius: 0.6em;
     box-shadow: 1.2em 2em 3em rgba(0, 0, 0, 0.2);
     color: #ffffff;
+    overflow: hidden; /* Hide overflow within the container */
 }
 
 .container > h1 {
@@ -93,52 +96,56 @@ h3 {
 /* Movies list styling */
 #movies-list {
     margin-top: 20px;
-  }
+}
   
-  #movies-list h2 {
+#movies-list h2 {
     font-size: 20px;
     text-align: center;
     color: #fff;
-  }
+}
   
-  #movie-items {
+#movie-items {
     list-style-type: none;
     padding: 0;
-  }
+}
   
-  #movie-items li {
+#movie-items li {
     padding: 10px;
     border-bottom: 1px solid #444; /* Dark border between items */
     display: flex;
     justify-content: space-between;
-  }
+}
   
-  #movie-items a {
+#movie-items a {
     color: #1abc9c; /* Link color */
     text-decoration: none;
-  }
+}
   
-  #movie-items a:hover {
+#movie-items a:hover {
     text-decoration: underline;
-  }
+}
   
-  #movie-items .delete-movie {
+#movie-items .delete-movie {
     color: #e74c3c; /* Red color for delete links */
-  }
-  table {
+}
+
+table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-  }
-  th,
-  td {
+}
+  
+th,
+td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
-  }
-  th {
+}
+  
+th {
     background-color: #333;
-  }
+}
+  
 #movie-items .delete-movie {
     color: #e74c3c; /* Red color for delete links */
 }

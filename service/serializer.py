@@ -7,9 +7,19 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-    def validate_description(self, data):
-        if data['description'] is not None:
+    def validate(self, data):
+        if 'description' not in data or not data['description'].strip():
             raise serializers.ValidationError({'error': "description is must"})
+        if 'movie_icon' not in data or not data['movie_icon'].strip():
+            raise serializers.ValidationError({'error':'movie_icon should not be empty'})
+        if 'release_date' not in data or not data['release_date'].strip():
+            raise serializers.ValidationError({'error':'release_date should not be empty'})
+        if 'movie_title' not in data or not data['movie_title'].strip():
+            raise serializers.ValidationError({'error':'movie_title should not be empty'})
+        if 'actor' not in data or not data['actor'].strip():
+             raise serializers.ValidationError({'error':'actor should not be empty'})
+        if 'country' not in data or not data['country'].strip():
+            raise serializers.ValidationError({'error':'country should not be empty'})
         return data
 
 

@@ -16,4 +16,4 @@ class RegisterForm(forms.ModelForm):
 
 class ProfileForm(forms.ModelForm):
     class Meta:
-        fields = ['gender', 'city']
+        fields = ['gender', 'city', 'email_otp', 'is_email_verified']

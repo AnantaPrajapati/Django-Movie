@@ -58,6 +58,7 @@ urlpatterns = [
     path('MovieCreate/', views.MovieCreate, name='MovieCreate'),
     path('MovieUpdate/<str:pk>', views.MovieUpdate, name='MovieUpdate'),
     path('MovieDelete/<str:pk>', views.MovieDelete, name='MovieDelete'),
+    path('verify_otp/<int:user_id>', views.verify_otp, name='verify_otp'),
     path('UserList/', views.UserList, name='Userlist'),
     path('', include(router.urls)),
     # path('loginView/', views.LoginView, name='LoginView' )
